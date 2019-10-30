@@ -2,8 +2,8 @@ package com.revolut.task;
 
 
 import com.revolut.task.model.Account;
-import com.revolut.task.web.dto.OneAccountOperationRequestDto;
-import com.revolut.task.web.dto.TwoAccountsOperationRequestDto;
+import com.revolut.task.web.dto.AmountRequestDto;
+import com.revolut.task.web.dto.TransferRequestDto;
 import org.glassfish.jersey.test.JerseyTest;
 
 import javax.ws.rs.client.Entity;
@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import static org.junit.Assert.assertEquals;
 
 public abstract class AbstractApiTest extends JerseyTest {
+
 	protected Account createAccount() {
 		final Response response = target("accounts").request().post(null);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -23,39 +24,36 @@ public abstract class AbstractApiTest extends JerseyTest {
 	}
 
 	protected Account getAccount(long accountNumber) {
-		final Response response = target("accounts/" + accountNumber).request().get();
+		final Response response = target(String.format("accounts/%s", accountNumber)).request().get();
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
 		return response.readEntity(Account.class);
 	}
 
 	protected Response deposit(long accountNumber, BigDecimal amount) {
-		final OneAccountOperationRequestDto depositRequest = new OneAccountOperationRequestDto();
-		depositRequest.setAccountNumber(accountNumber);
+		final AmountRequestDto depositRequest = new AmountRequestDto();
 		depositRequest.setAmount(amount);
 
-		return target("operations/deposit").request(MediaType.APPLICATION_JSON_TYPE)
+		return target(String.format("accounts/%s/deposit", accountNumber)).request(MediaType.APPLICATION_JSON_TYPE)
 				.put(Entity.entity(depositRequest, MediaType.APPLICATION_JSON_TYPE));
 	}
 
 	protected Response withdraw(long accountNumber, BigDecimal amount) {
-		final OneAccountOperationRequestDto withdrawRequest = new OneAccountOperationRequestDto();
-		withdrawRequest.setAccountNumber(accountNumber);
+		final AmountRequestDto withdrawRequest = new AmountRequestDto();
 		withdrawRequest.setAmount(amount);
 
-		return target("operations/withdraw").request(MediaType.APPLICATION_JSON_TYPE)
+		return target(String.format("accounts/%s/withdraw", accountNumber)).request(MediaType.APPLICATION_JSON_TYPE)
 				.put(Entity.entity(withdrawRequest, MediaType.APPLICATION_JSON_TYPE));
 	}
 
 	/** Transfers amount of units from accountFrom to accountTo */
 	protected Response transfer(long accountFrom, long accountTo, BigDecimal amount) {
 
-		final TwoAccountsOperationRequestDto transferRequest = new TwoAccountsOperationRequestDto();
-		transferRequest.setAccountFrom(accountFrom);
+		final TransferRequestDto transferRequest = new TransferRequestDto();
 		transferRequest.setAccountTo(accountTo);
 		transferRequest.setAmount(amount);
 
-		return target("operations/transfer").request(MediaType.APPLICATION_JSON_TYPE)
+		return target(String.format("accounts/%s/transfer", accountFrom)).request(MediaType.APPLICATION_JSON_TYPE)
 				.put(Entity.entity(transferRequest, MediaType.APPLICATION_JSON_TYPE));
 	}
 

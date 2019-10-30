@@ -7,7 +7,6 @@ import com.revolut.task.repository.TransactionManager;
 import com.revolut.task.service.AccountService;
 import com.revolut.task.service.OperationService;
 import com.revolut.task.web.AccountEndpoint;
-import com.revolut.task.web.OperationEndpoint;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -25,7 +24,6 @@ import javax.ws.rs.ApplicationPath;
 public class ApplicationConfig extends ResourceConfig {
 	public ApplicationConfig() {
 		register(AccountEndpoint.class);
-		register(OperationEndpoint.class);
 		register(new AbstractBinder() {
 			@Override
 			protected void configure() {

@@ -4,7 +4,7 @@ import com.anarsoft.vmlens.concurrent.junit.ConcurrentTestRunner;
 import com.anarsoft.vmlens.concurrent.junit.ThreadCount;
 import com.revolut.task.config.ApplicationConfig;
 import com.revolut.task.model.Account;
-import com.revolut.task.web.dto.TwoAccountsOperationRequestDto;
+import com.revolut.task.web.dto.TransferRequestDto;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -89,12 +89,11 @@ public class TransferConcurrentTest extends AbstractApiTest {
 	}
 
 	private void transferIgnoreResult(long accountFrom, long accountTo, BigDecimal amount) {
-		final TwoAccountsOperationRequestDto transferRequest = new TwoAccountsOperationRequestDto();
-		transferRequest.setAccountFrom(accountFrom);
+		final TransferRequestDto transferRequest = new TransferRequestDto();
 		transferRequest.setAccountTo(accountTo);
 		transferRequest.setAmount(amount);
 
-		final Response response = target("operations/transfer").request(MediaType.APPLICATION_JSON_TYPE)
+		final Response response = target(String.format("accounts/%s/transfer", accountFrom)).request(MediaType.APPLICATION_JSON_TYPE)
 				.put(Entity.entity(transferRequest, MediaType.APPLICATION_JSON_TYPE));
 
 		if (Response.Status.OK.getStatusCode() == response.getStatus()) {
